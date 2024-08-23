@@ -23,7 +23,7 @@ const TaskList = () => {
 
   const handleStart = async (taskId) => {
     try {
-      await axios.post(`http://localhost:5000/api/tasks/${taskId}/start`, {}, {
+      await axios.post(`https://employee-task-dlk.onrender.com/api/tasks/${taskId}/start`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -36,12 +36,12 @@ const TaskList = () => {
 
   const handleStop = async (taskId) => {
     try {
-      await axios.post(`http://localhost:5000/api/tasks/${taskId}/stop`, {}, {
+      await axios.post(`https://employee-task-dlk.onrender.com/api/tasks/${taskId}/stop`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      fetchTasks(); // Refresh tasks list after stopping the task
+      fetchTasks();
     } catch (error) {
       console.error('Error stopping task:', error);
     }
