@@ -7,30 +7,41 @@ import Art from '../assets/mobile-phone.png'
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(''); 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
     try {
-      const response = await axios.post('https://employee-task-dlk.onrender.com/api/auth/login', { username, password });
+      const response = await axios.post('https://employee-task-dlk.onrender.com/api/auth/login', {
+        username,
+        password
+      }, {
+        withCredentials: true 
+      });
+
       const token = response.data.token;
-      localStorage.setItem('token', token);
 
-      // Decode the token
-      const decodedToken = jwtDecode(token);
-      const role = decodedToken.role;
+      if (token) {
+        localStorage.setItem('token', token);
 
-      // Navigate based on role
-      if (role === 'admin') {
-        navigate('/admin');
-      } else if (role === 'employee') {
-        navigate('/employee');
+        const decodedToken = jwtDecode(token);
+        const role = decodedToken.role;
+        if (role === 'admin') {
+          navigate('/admin');
+        } else if (role === 'employee') {
+          navigate('/employee');
+        }
+      } else {
+        setError('No token received');
       }
     } catch (err) {
-      console.error(err);
+      setError(' Invalid username or password');
+      console.error('Authentication error:', err);
     }
   };
-
   return (
     <div className="flex flex-col md:flex-row w-full h-screen">
       <div className="flex flex-col justify-center items-center w-full md:w-1/2 h-full p-6 md:p-12 bg-white shadow-lg rounded-lg">
