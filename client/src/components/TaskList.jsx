@@ -10,7 +10,7 @@ const TaskList = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/tasks/tasks', {
+      const response = await axios.get('https://employee-task-dlk.onrender.com/api/tasks/tasks', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
