@@ -22,7 +22,7 @@ function AssignTask() {
 
   const assignTask = async () => {
     try {
-      await axios.post('http://localhost:5000/api/tasks/assign', {
+      await axios.post('https://employee-task-dlk.onrender.com/api/tasks/assign', {
         title: taskTitle,
         description: taskDescription,
         employeeId: selectedEmployee
