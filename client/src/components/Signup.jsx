@@ -12,7 +12,7 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/auth/register', { username, password, role });
+      await axios.post('https://employee-task-dlk.onrender.com/api/auth/register', { username, password, role });
       navigate('/login');
     } catch (err) {
       console.error(err);
