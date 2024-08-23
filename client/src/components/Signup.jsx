@@ -1,21 +1,27 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Art from '../assets/designer.png'
+import Art from '../assets/designer.png';
 
 function Signup() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('employee');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(''); 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess(''); 
     try {
       await axios.post('https://employee-task-dlk.onrender.com/api/auth/register', { username, password, role });
-      navigate('/login');
+      setSuccess('Account created successfully!');
+      setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
-      console.error(err);
+      setError(err.response?.data?.message || 'An error occurred');
+      console.error('Signup error:', err);
     }
   };
 
@@ -23,6 +29,16 @@ function Signup() {
     <div className="flex flex-col md:flex-row w-full h-screen">
       <div className="flex flex-col justify-center items-center w-full md:w-1/2 h-full p-6 md:p-12 bg-white shadow-lg rounded-lg">
         <h1 className="text-4xl font-bold text-gray-800 mb-8">Signup</h1>
+        {success && (
+          <div className="mb-4 text-green-600">
+            {success}
+          </div>
+        )}
+        {error && (
+          <div className="mb-4 text-red-600">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="w-full max-w-sm">
           <div className="mb-6">
             <label htmlFor="username" className="block text-md font-semibold text-gray-700 mb-2">Username</label>
@@ -57,8 +73,8 @@ function Signup() {
               required
               className="border border-gray-300 bg-gray-50 p-3 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option className='p-2' value="employee">Employee</option>
-              <option className='p-10' value="admin">Admin</option>
+              <option value="employee">Employee</option>
+              <option value="admin">Admin</option>
             </select>
           </div>
           <button
@@ -73,7 +89,7 @@ function Signup() {
         </p>
       </div>
       <div className="hidden md:flex md:justify-center md:items-center md:w-1/2 h-full bg-blue-500 rounded-l-lg ">
-        <img src={Art} alt="" className="w-8/12"></img>
+        <img src={Art} alt="Design" className="w-8/12" />
       </div>
     </div>
   );
