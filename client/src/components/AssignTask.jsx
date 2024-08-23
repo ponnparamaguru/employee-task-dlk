@@ -10,7 +10,7 @@ function AssignTask() {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/employees');
+        const response = await axios.get('https://employee-task-dlk.onrender.com/api/employees');
         setEmployees(response.data);
       } catch (err) {
         console.error(err);
