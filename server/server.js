@@ -9,7 +9,7 @@ const taskRoutes = require('./routes/tasks');
 const app = express();
 
 app.use(cors({
-  origin: ["https://employee-task-dlk.onrender.com"],
+  origin: ["http://localhost:3000"],
   methods: ["POST", "GET"],
   credentials: true
 }));
