@@ -9,7 +9,7 @@ const taskRoutes = require('./routes/tasks');
 const app = express();
 
 app.use(cors({
-  origin: ["http://localhost:3000"],
+  origin: ["https://employee-task-dlk.vercel.app"],
   methods: ["POST", "GET"],
   credentials: true
 }));
