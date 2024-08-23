@@ -59,7 +59,7 @@ function EmployeeDashboard() {
     setTimer(null);
     setIsPaused(false);
 
-    axios.patch(`http://localhost:5000/api/tasks/update/${currentTask._id}`, {
+    axios.patch(`https://employee-task-dlk.onrender.com/api/tasks/update/${currentTask._id}`, {
       status: 'completed',
       endTime: new Date(),
       timeSpent
