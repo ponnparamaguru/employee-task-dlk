@@ -14,7 +14,7 @@ function EmployeeDashboard() {
     const fetchTasks = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get('http://localhost:5000/api/tasks/employee/me', {
+        const response = await axios.get('https://employee-task-dlk.onrender.com/tasks/employee/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
         setTasks(response.data);
