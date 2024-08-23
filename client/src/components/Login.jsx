@@ -46,6 +46,11 @@ function Login() {
     <div className="flex flex-col md:flex-row w-full h-screen">
       <div className="flex flex-col justify-center items-center w-full md:w-1/2 h-full p-6 md:p-12 bg-white shadow-lg rounded-lg">
         <h1 className="text-4xl font-bold text-gray-800 mb-8">Login</h1>
+        {error && (
+          <div className="mb-4 text-red-600">
+            {error}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="w-full max-w-sm">
           <div className="mb-6">
             <label htmlFor="username" className="block text-md font-semibold text-gray-700 mb-2">Username</label>
