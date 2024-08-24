@@ -45,7 +45,7 @@ function EmployeeDashboard() {
 
   const updateTaskStatus = async (taskId, status, updateFields = {}) => {
     try {
-      await axios.patch(`http://localhost:5000/api/tasks/update/${taskId}`, {
+      await axios.patch(`https://employee-task-dlk.onrender.com/api/tasks/update/${taskId}`, {
         status,
         ...updateFields
       });
@@ -70,7 +70,7 @@ function EmployeeDashboard() {
     setTimer(setInterval(() => {
       setTimeSpent(prev => prev + 1);
     }, 1000));
-    axios.patch(`http://localhost:5000/api/tasks/update/${task._id}`, {
+    axios.patch(`https://employee-task-dlk.onrender.com/api/tasks/update/${task._id}`, {
       status: 'in-progress',
       startTime: now
     });
@@ -95,7 +95,7 @@ function EmployeeDashboard() {
     clearInterval(timer);
     setIsPaused(false);
 
-    axios.patch(`http://localhost:5000/api/tasks/update/${currentTask._id}`, {
+    axios.patch(`https://employee-task-dlk.onrender.com/api/tasks/update/${currentTask._id}`, {
       status: 'completed',
       endTime: new Date(),
       timeSpent
