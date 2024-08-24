@@ -2,24 +2,26 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
-import Art from '../assets/mobile-phone.png'
+import Art from '../assets/mobile-phone.png';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); 
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(''); 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess(''); 
 
     try {
       const response = await axios.post('https://employee-task-dlk.onrender.com/api/auth/login', {
         username,
         password
       }, {
-        withCredentials: true 
+        withCredentials: true
       });
 
       const token = response.data.token;
@@ -29,19 +31,25 @@ function Login() {
 
         const decodedToken = jwtDecode(token);
         const role = decodedToken.role;
-        if (role === 'admin') {
-          navigate('/admin');
-        } else if (role === 'employee') {
-          navigate('/employee');
-        }
+
+        setSuccess('Login successful!');
+
+        setTimeout(() => {
+          if (role === 'admin') {
+            navigate('/admin');
+          } else if (role === 'employee') {
+            navigate('/employee');
+          }
+        }, 1000);
       } else {
         setError('No token received');
       }
     } catch (err) {
-      setError(' Invalid username or password');
+      setError('Invalid username or password');
       console.error('Authentication error:', err);
     }
   };
+
   return (
     <div className="flex flex-col md:flex-row w-full h-screen">
       <div className="flex flex-col justify-center items-center w-full md:w-1/2 h-full p-6 md:p-12 bg-white shadow-lg rounded-lg">
@@ -49,6 +57,11 @@ function Login() {
         {error && (
           <div className="mb-4 text-red-600">
             {error}
+          </div>
+        )}
+        {success && (
+          <div className="mb-4 text-green-600">
+            {success}
           </div>
         )}
         <form onSubmit={handleSubmit} className="w-full max-w-sm">
@@ -87,10 +100,10 @@ function Login() {
           </p>
         </form>
       </div>
-      <div className="hidden md:flex md:justify-center md:items-center md:w-1/2 h-full bg-blue-500 rounded-l-lg ">
-        <img src={Art} alt="" className="w-8/12"></img>
+      <div className="hidden md:flex md:justify-center md:items-center md:w-1/2 h-full bg-blue-500 rounded-l-lg">
+        <img src={Art} alt="Art" className="w-8/12" />
       </div>
-      </div>
+    </div>
   );
 }
 
