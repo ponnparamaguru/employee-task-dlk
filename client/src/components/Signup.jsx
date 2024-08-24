@@ -8,11 +8,7 @@ function Signup() {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('employee');
   const [error, setError] = useState('');
-<<<<<<< HEAD
   const [success, setSuccess] = useState('');
-=======
-  const [success, setSuccess] = useState(''); 
->>>>>>> 60449b938945037bc0f06174e9ddd4e231f5f390
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,15 +16,9 @@ function Signup() {
     setError('');
     setSuccess(''); 
     try {
-<<<<<<< HEAD
       await axios.post('http://localhost:5000/api/auth/register', { username, password, role });
       setSuccess('Account created successfully!');
       setTimeout(() => navigate('/login'), 1000); 
-=======
-      await axios.post('https://employee-task-dlk.onrender.com/api/auth/register', { username, password, role });
-      setSuccess('Account created successfully!');
-      setTimeout(() => navigate('/login'), 2000);
->>>>>>> 60449b938945037bc0f06174e9ddd4e231f5f390
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred');
       console.error('Signup error:', err);
