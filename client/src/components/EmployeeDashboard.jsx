@@ -8,7 +8,6 @@ function EmployeeDashboard() {
   const [timer, setTimer] = useState(null);
   const [timeSpent, setTimeSpent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const [startTime, setStartTime] = useState(null);
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -17,50 +16,84 @@ function EmployeeDashboard() {
         const response = await axios.get('http://localhost:5000/api/tasks/employee/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        setTasks(response.data);
+
+        const tasksData = response.data;
+        setTasks(tasksData);
+
+        const inProgressTask = tasksData.find(task => task.status === 'in-progress');
+
+        if (inProgressTask) {
+          setCurrentTask(inProgressTask);
+          setTimeSpent(inProgressTask.timeSpent || 0);
+
+          const now = new Date();
+          const startTime = new Date(inProgressTask.startTime);
+          const elapsedTime = Math.floor((now - startTime) / 1000);
+
+          setTimeSpent(prev => prev + elapsedTime);
+          startTimer(inProgressTask);
+        }
       } catch (err) {
-        console.error(err);
+        console.error('Error fetching tasks:', err);
       }
     };
+
     fetchTasks();
+
+    return () => clearInterval(timer);
   }, []);
+
+  const updateTaskStatus = async (taskId, status, updateFields = {}) => {
+    try {
+      await axios.patch(`http://localhost:5000/api/tasks/update/${taskId}`, {
+        status,
+        ...updateFields
+      });
+
+      setTasks(tasks.map(task =>
+        task._id === taskId ? { ...task, status, ...updateFields } : task
+      ));
+
+      if (status === 'completed') {
+        clearInterval(timer);
+        setCurrentTask(null);
+      }
+    } catch (err) {
+      console.error('Error updating task status:', err);
+    }
+  };
 
   const startTimer = (task) => {
     setCurrentTask(task);
-    const now = new Date();
-    setStartTime(now);
+    setIsPaused(false);
+
     setTimer(setInterval(() => {
-      setTimeSpent((prev) => prev + 1);
+      setTimeSpent(prev => prev + 1);
     }, 1000));
-    axios.patch(`http://localhost:5000/api/tasks/update/${task._id}`, {
-      status: 'in-progress',
-      startTime: now
-    });
+
+    updateTaskStatus(task._id, 'in-progress', { startTime: new Date(), timeSpent });
   };
 
   const pauseTimer = () => {
     clearInterval(timer);
-    setTimer(null);
     setIsPaused(true);
+
+    updateTaskStatus(currentTask._id, 'in-progress', { timeSpent, startTime: new Date() });
   };
 
   const resumeTimer = () => {
-    const now = new Date();
-    const elapsed = Math.floor((now - startTime) / 1000);
-    setStartTime(new Date(startTime.getTime() + elapsed * 1000)); 
     setIsPaused(false);
+
     setTimer(setInterval(() => {
-      setTimeSpent((prev) => prev + 1);
+      setTimeSpent(prev => prev + 1);
     }, 1000));
   };
 
-  const stopTimer = () => {
+  const stopTimer = async () => {
     clearInterval(timer);
-    setTimer(null);
     setIsPaused(false);
 
-    axios.patch(`http://localhost:5000/api/tasks/update/${currentTask._id}`, {
-      status: 'completed',
+    await updateTaskStatus(currentTask._id, 'completed', {
       endTime: new Date(),
       timeSpent
     });
@@ -69,8 +102,19 @@ function EmployeeDashboard() {
     setTimeSpent(0);
   };
 
-  const restartTimer = () => {
-    startTimer(currentTask);
+  const restartTimer = (task) => {
+    if (timer) {
+      clearInterval(timer);
+      setTimer(null);
+    }
+    setIsPaused(false);
+    setTimeSpent(0);
+
+    setTimer(setInterval(() => {
+      setTimeSpent(prev => prev + 1);
+    }, 1000));
+
+    updateTaskStatus(task._id, 'in-progress', { startTime: new Date(), timeSpent: 0 });
   };
 
   const formatTime = (seconds) => {
@@ -86,7 +130,7 @@ function EmployeeDashboard() {
       </div>
       {tasks.length === 0 ? (
         <div className="w-full h-96 md:w-10/12 lg:w-8/12 bg-white shadow-lg rounded-br-lg rounded-bl-lg overflow-hidden">
-        <p className="text-center text-gray-600 mt-4">No tasks available.</p>
+          <p className="text-center text-gray-600 mt-4">No tasks available.</p>
         </div>
       ) : (
         <div className="w-full md:w-10/12 lg:w-8/12 bg-white shadow-lg rounded-br-lg rounded-bl-lg overflow-hidden">
@@ -95,62 +139,59 @@ function EmployeeDashboard() {
               {tasks.map(task => (
                 <div
                   key={task._id}
-                  className="relative border border-gray-200 rounded-lg p-4 flex items-start justify-between hover:shadow-lg transition-shadow duration-300"
+                  className="relative border border-gray-200 rounded-lg p-4 flex items-center justify-between hover:shadow-lg transition-shadow duration-300"
                 >
                   <div className="flex-1">
                     <h2 className="text-lg font-semibold text-gray-800">{task.title}</h2>
                     <p className="text-gray-600 mt-1">{task.description}</p>
-                    <div className="mt-4 flex flex-col space-y-2">
-                      <p className="text-gray-800 text-xl font-bold">{formatTime(timeSpent)}</p>
-                      <div className="flex space-x-2">
-                        {currentTask && currentTask._id === task._id ? (
-                          isPaused ? (
-                            <button
-                              className="bg-green-500 text-white p-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
-                              onClick={resumeTimer}
-                            >
-                              <FaPlay />
-                            </button>
-                          ) : (
-                            <>
-                              <button
-                                className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                                onClick={pauseTimer}
-                              >
-                                <FaPause />
-                              </button>
-                              <button
-                                className="bg-red-500 text-white p-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
-                                onClick={stopTimer}
-                              >
-                                <FaStop />
-                              </button>
-                            </>
-                          )
-                        ) : (
+                    <div className="flex space-x-2 mt-4">
+                      {currentTask && currentTask._id === task._id ? (
+                        isPaused ? (
                           <button
-                            className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                            onClick={() => startTimer(task)}
+                            className="bg-green-500 text-white p-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
+                            onClick={resumeTimer}
                           >
                             <FaPlay />
                           </button>
-                        )}
-                        {currentTask && currentTask._id === task._id && !isPaused && (
-                          <button
-                            className="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                            onClick={restartTimer}
-                          >
-                            <FaRedo />
-                          </button>
-                        )}
-                      </div>
+                        ) : (
+                          <>
+                            <button
+                              className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                              onClick={pauseTimer}
+                            >
+                              <FaPause />
+                            </button>
+                            <button
+                              className="bg-red-500 text-white p-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
+                              onClick={stopTimer}
+                            >
+                              <FaStop />
+                            </button>
+                          </>
+                        )
+                      ) : (
+                        <button
+                          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          onClick={() => startTimer(task)}
+                        >
+                          Begin Task
+                        </button>
+                      )}
+                      {currentTask && currentTask._id === task._id && !isPaused && (
+                        <button
+                          className="bg-yellow-500 text-white p-2 rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                          onClick={() => restartTimer(task)}
+                        >
+                          <FaRedo />
+                        </button>
+                      )}
                     </div>
                   </div>
-                  <div className="flex-shrink-0">
-                    {currentTask && currentTask._id === task._id && (
-                      <p className="text-4xl font-bold text-gray-800">{formatTime(timeSpent)}</p>
-                    )}
-                  </div>
+                  <p className="text-gray-800 md:text-4xl text-3xl font-bold">
+                    {currentTask && currentTask._id === task._id && !isPaused
+                      ? formatTime(timeSpent)
+                      : formatTime(task.timeSpent || 0)}
+                  </p>
                 </div>
               ))}
             </div>

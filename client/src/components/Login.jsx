@@ -2,32 +2,51 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
-import Art from '../assets/mobile-phone.png'
+import Art from '../assets/mobile-phone.png';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(''); 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess(''); 
+
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', { username, password });
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        username,
+        password
+      }, {
+        withCredentials: true
+      });
+
       const token = response.data.token;
-      localStorage.setItem('token', token);
 
-      // Decode the token
-      const decodedToken = jwtDecode(token);
-      const role = decodedToken.role;
+      if (token) {
+        localStorage.setItem('token', token);
 
-      // Navigate based on role
-      if (role === 'admin') {
-        navigate('/admin');
-      } else if (role === 'employee') {
-        navigate('/employee');
+        const decodedToken = jwtDecode(token);
+        const role = decodedToken.role;
+
+        setSuccess('Login successful!');
+
+        setTimeout(() => {
+          if (role === 'admin') {
+            navigate('/admin');
+          } else if (role === 'employee') {
+            navigate('/employee');
+          }
+        }, 1000);
+      } else {
+        setError('No token received');
       }
     } catch (err) {
-      console.error(err);
+      setError('Invalid username or password');
+      console.error('Authentication error:', err);
     }
   };
 
@@ -35,6 +54,16 @@ function Login() {
     <div className="flex flex-col md:flex-row w-full h-screen">
       <div className="flex flex-col justify-center items-center w-full md:w-1/2 h-full p-6 md:p-12 bg-white shadow-lg rounded-lg">
         <h1 className="text-4xl font-bold text-gray-800 mb-8">Login</h1>
+        {error && (
+          <div className="mb-4 text-red-600">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="mb-4 text-green-600">
+            {success}
+          </div>
+        )}
         <form onSubmit={handleSubmit} className="w-full max-w-sm">
           <div className="mb-6">
             <label htmlFor="username" className="block text-md font-semibold text-gray-700 mb-2">Username</label>
@@ -71,10 +100,10 @@ function Login() {
           </p>
         </form>
       </div>
-      <div className="hidden md:flex md:justify-center md:items-center md:w-1/2 h-full bg-blue-500 rounded-l-lg ">
-        <img src={Art} alt="" className="w-8/12"></img>
+      <div className="hidden md:flex md:justify-center md:items-center md:w-1/2 h-full bg-blue-500 rounded-l-lg">
+        <img src={Art} alt="Art" className="w-8/12" />
       </div>
-      </div>
+    </div>
   );
 }
 

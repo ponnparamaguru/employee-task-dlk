@@ -15,10 +15,30 @@ function AssignedTasks() {
     };
     fetchTasks();
   }, []);
+
   const formatTime = (seconds) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${String(minutes).padStart(2, '0')}m:${String(secs).padStart(2, '0')}s`;
+  };
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'completed':
+        return 'text-green-500'; // Green color for completed
+      case 'in-progress':
+        return 'text-yellow-500'; // Yellow color for in-progress
+      default:
+        return 'text-gray-500'; // Gray color for yet to start
+    }
+  };
+
+  const getStatusLabel = (timeSpent) => {
+    if (timeSpent > 0) {
+      return 'Completed';
+    } else {
+      return 'Yet to Start';
+    }
   };
 
   return (
@@ -27,7 +47,9 @@ function AssignedTasks() {
         <h1 className="text-3xl font-semibold text-white p-6">Assigned Tasks</h1>
       </div>
       {tasks.length === 0 ? (
-        <p className="text-center text-gray-600">No tasks assigned yet.</p>
+        <div className='w-full h-96 md:w-10/12 lg:w-8/12 bg-white shadow-lg rounded-br-lg rounded-bl-lg overflow-hidden'>
+          <p className="text-center text-gray-600 pt-10">No tasks assigned yet.</p>
+        </div>
       ) : (
         <div className="w-full md:w-10/12 lg:w-8/12 bg-white shadow-lg rounded-br-lg rounded-bl-lg overflow-hidden">
           <div className="p-6">
@@ -46,6 +68,9 @@ function AssignedTasks() {
                   </div>
                   <div className="ml-4 text-right">
                     <span className="text-2xl font-bold">{formatTime(task.timeSpent)}</span>
+                    <p className={`mt-2 ${getStatusColor(task.timeSpent > 0 ? 'completed' : 'yet-to-start')}`}>
+                      {getStatusLabel(task.timeSpent)}
+                    </p>
                   </div>
                 </div>
               ))}

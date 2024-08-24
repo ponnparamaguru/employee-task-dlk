@@ -9,8 +9,8 @@ const taskRoutes = require('./routes/tasks');
 const app = express();
 
 app.use(cors({
-  origin: ["https://employee-tasks.onrender.com"],
-  methods: ["POST", "GET"],
+  origin: 'http://localhost:3000',
+  methods: ["GET", "POST", "PATCH", "DELETE"], 
   credentials: true
 }));
 
@@ -20,7 +20,7 @@ app.use('/api', userRoutes);
 app.use('/api', taskRoutes);
 app.use('/api/auth', authRoutes);
 
-mongoose.connect('mongodb+srv://mern-task:tTZPTSLKqrPCIbsf@mern-task.pwbzq.mongodb.net/dlk?retryWrites=true&w=majority')
+mongoose.connect('mongodb://localhost:27017/mern-task-dlk')
   .then(() => console.log('MongoDB connected'))
   .catch(err => {
     console.error('MongoDB connection error:', err);

@@ -6,6 +6,7 @@ function AssignTask() {
   const [taskTitle, setTaskTitle] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
   const [selectedEmployee, setSelectedEmployee] = useState('');
+  const [success, setSuccess] = useState(''); 
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -30,7 +31,7 @@ function AssignTask() {
       setTaskTitle('');
       setTaskDescription('');
       setSelectedEmployee('');
-      alert('Task assigned successfully!');
+      setSuccess('Task assigned successfully!');
     } catch (err) {
       console.error(err);
     }
@@ -41,6 +42,11 @@ function AssignTask() {
       <h1 className="text-4xl font-semibold text-gray-800 mb-8 text-center">Assign Task</h1>
       <div className="bg-white shadow-md rounded-lg w-full max-w-md md:max-w-xl lg:max-w-2xl p-6 md:p-8">
         <form className="space-y-6">
+        {success && (
+          <div className="mb-4 text-green-600 text-center">
+            {success}
+          </div>
+        )}
           <div>
             <label htmlFor="employee" className="block text-sm font-medium text-gray-700 mb-2">
               Select Employee

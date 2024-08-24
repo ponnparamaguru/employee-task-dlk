@@ -28,7 +28,7 @@ const TaskList = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      fetchTasks(); // Refresh tasks list after starting the task
+      fetchTasks();
     } catch (error) {
       console.error('Error starting task:', error);
     }
@@ -36,12 +36,12 @@ const TaskList = () => {
 
   const handleStop = async (taskId) => {
     try {
-      await axios.post(`http://localhost:5000/api/tasks/${taskId}/stop`, {}, {
+      await axios.post(`https://employee-task-dlk.onrender.com/api/tasks/${taskId}/stop`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
-      fetchTasks(); // Refresh tasks list after stopping the task
+      fetchTasks(); 
     } catch (error) {
       console.error('Error stopping task:', error);
     }
