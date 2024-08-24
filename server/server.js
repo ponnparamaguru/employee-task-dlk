@@ -20,7 +20,7 @@ app.use('/api', userRoutes);
 app.use('/api', taskRoutes);
 app.use('/api/auth', authRoutes);
 
-mongoose.connect('mongodb://localhost:27017/mern-task-dlk')
+mongoose.connect('mongodb+srv://mern-task:tR0eW29oip5tCbXT@mern-task.pwbzq.mongodb.net/mern-task?retryWrites=true&w=majority&appName=mern-task')
   .then(() => console.log('MongoDB connected'))
   .catch(err => {
     console.error('MongoDB connection error:', err);
