@@ -17,11 +17,7 @@ function Login() {
     setSuccess(''); 
 
     try {
-<<<<<<< HEAD
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
-=======
       const response = await axios.post('https://employee-task-dlk.onrender.com/api/auth/login', {
->>>>>>> 60449b938945037bc0f06174e9ddd4e231f5f390
         username,
         password
       }, {
