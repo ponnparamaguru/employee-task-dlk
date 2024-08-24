@@ -10,7 +10,7 @@ const TaskList = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/tasks/tasks', {
+      const response = await axios.get('https://employee-task-dlk.onrender.com/api/tasks/tasks', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -23,7 +23,7 @@ const TaskList = () => {
 
   const handleStart = async (taskId) => {
     try {
-      await axios.post(`http://localhost:5000/api/tasks/${taskId}/start`, {}, {
+      await axios.post(`https://employee-task-dlk.onrender.com/api/tasks/${taskId}/start`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
@@ -41,7 +41,11 @@ const TaskList = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`
         }
       });
+<<<<<<< HEAD
       fetchTasks(); 
+=======
+      fetchTasks();
+>>>>>>> 60449b938945037bc0f06174e9ddd4e231f5f390
     } catch (error) {
       console.error('Error stopping task:', error);
     }

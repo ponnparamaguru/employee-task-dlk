@@ -14,6 +14,10 @@ router.get('/tasks/employee/me', authMiddleware, async (req, res) => {
       res.status(500).json({ message: err.message });
     }
   });
+<<<<<<< HEAD
+=======
+
+>>>>>>> 60449b938945037bc0f06174e9ddd4e231f5f390
 router.post('/tasks/assign', async (req, res) => {
   try {
     const { title, description, employeeId } = req.body;
@@ -26,6 +30,10 @@ router.post('/tasks/assign', async (req, res) => {
     if (!employee || employee.role !== 'employee') {
       return res.status(400).json({ message: 'Invalid employee' });
     }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 60449b938945037bc0f06174e9ddd4e231f5f390
     const newTask = new Task({ title, description, assignedTo: employeeId });
     await newTask.save();
     res.status(201).json({ message: 'Task assigned successfully', task: newTask });
@@ -60,7 +68,10 @@ router.patch('/tasks/update/:id', async (req, res) => {
     }
   });
   
+<<<<<<< HEAD
 
+=======
+>>>>>>> 60449b938945037bc0f06174e9ddd4e231f5f390
   router.patch('/tasks/update/:id/time', authMiddleware, async (req, res) => {
     try {
       const { id } = req.params;

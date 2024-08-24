@@ -13,7 +13,7 @@ function EmployeeDashboard() {
     const fetchTasks = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get('http://localhost:5000/api/tasks/employee/me', {
+        const response = await axios.get('https://employee-task-dlk.onrender.com/tasks/employee/me', {
           headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -70,8 +70,10 @@ function EmployeeDashboard() {
     setTimer(setInterval(() => {
       setTimeSpent(prev => prev + 1);
     }, 1000));
-
-    updateTaskStatus(task._id, 'in-progress', { startTime: new Date(), timeSpent });
+    axios.patch(`http://localhost:5000/api/tasks/update/${task._id}`, {
+      status: 'in-progress',
+      startTime: now
+    });
   };
 
   const pauseTimer = () => {
@@ -93,7 +95,8 @@ function EmployeeDashboard() {
     clearInterval(timer);
     setIsPaused(false);
 
-    await updateTaskStatus(currentTask._id, 'completed', {
+    axios.patch(`http://localhost:5000/api/tasks/update/${currentTask._id}`, {
+      status: 'completed',
       endTime: new Date(),
       timeSpent
     });
